@@ -27,3 +27,4 @@ mono_crash*
 **/obj/
 **/bin/
 **/addons/wakatime/
+**/.idea
