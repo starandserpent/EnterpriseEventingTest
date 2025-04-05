@@ -10,19 +10,22 @@ namespace EnterpriseEventingTest;
 /// This demonstrates how to wire up different services using an event registry.
 /// </summary>
 internal partial class Main : Node {
+
     /// <summary>
     /// The event registry that manages the events in the system.
     /// </summary>
     private EventRegistry? _eventRegistry;
+
     /// <summary>
-    /// The player service that manages player-related operations.
+    /// The player manager that manages player-related operations.
     /// </summary>
-    private PlayerManager? _playerService;
+    private PlayerManager? _playerManager;
+
     /// <summary>
-    /// The event handler that subscribes to player events.
+    /// The player event handler that subscribes to player events.
     /// Event handlers automatically subscribe to events during construction.
     /// </summary>
-    private PlayerEventHandler? _playerEventSubscriber;
+    private PlayerEventHandler? _playerEventHandler;
 
     /// <summary>
     /// Called when the node enters the scene tree for the first time.
@@ -38,8 +41,8 @@ internal partial class Main : Node {
             // Event subscription happens automatically in EventHandlerBase constructor
 
             // 3. Run the player workflow demonstration
-            if (_playerService != null) {
-                await _playerService.DemonstratePlayerWorkflowAsync();
+            if (_playerManager != null) {
+                await _playerManager.DemonstratePlayerWorkflowAsync();
             } else {
                 GD.Print("Main: PlayerService is null. Cannot demonstrate player workflow. Something must have gone wrong.");
             }
@@ -58,8 +61,8 @@ internal partial class Main : Node {
     private void InitializeServices(EventRegistry eventRegistry) {
         // Create all the services and pass in the registry dependency.
         try {
-            _playerService = new PlayerManager(eventRegistry);
-            _playerEventSubscriber = new PlayerEventHandler(eventRegistry);
+            _playerManager = new PlayerManager(eventRegistry);
+            _playerEventHandler = new PlayerEventHandler(eventRegistry);
         } catch (Exception e) {
             GD.Print($"Main: Error initializing services. {e.Message}");
             throw;
@@ -73,7 +76,7 @@ internal partial class Main : Node {
     public override void _ExitTree() {
 
         // Unsubscribe from events when quitting - this must be done explicitly
-        _playerEventSubscriber?.UnsubscribeFromEvents();
+        _playerEventHandler?.UnsubscribeFromEvents();
 
         GD.Print("Main: Unsubscribed from events before quitting.");
 
