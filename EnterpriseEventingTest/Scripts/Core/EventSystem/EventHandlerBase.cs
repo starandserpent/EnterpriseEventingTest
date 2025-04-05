@@ -10,6 +10,7 @@ namespace EnterpriseEventingTest.Core.EventSystem;
 /// Abstract base class for event handlers that provides common event subscription management functionality.
 /// Derived classes must implement RegisterEvents() to define their specific event subscriptions.
 /// This class maintains a registry of all event handlers to facilitate clean unsubscription.
+/// Event handlers automatically subscribe to events during construction - no need to manually call SubscribeToEvents().
 /// </summary>
 internal abstract class EventHandlerBase {
     /// <summary>
@@ -25,10 +26,20 @@ internal abstract class EventHandlerBase {
 
     /// <summary>
     /// Initializes a new instance of the event handler with the specified event registry.
+    /// Automatically subscribes to events defined in RegisterEvents during construction.
     /// </summary>
     /// <param name="eventRegistry">The event registry used to access event buses.</param>
     protected EventHandlerBase(EventRegistry eventRegistry) {
         EventRegistry = eventRegistry;
+        
+        try {
+            // Auto-register events during construction
+            SubscribeToEvents();
+        }
+        catch (Exception ex) {
+            Console.WriteLine($"{GetType().Name}: Failed to subscribe to events during construction: {ex.Message}");
+            throw;
+        }
     }
 
     /// <summary>
@@ -40,13 +51,12 @@ internal abstract class EventHandlerBase {
 
     /// <summary>
     /// Subscribes this handler to all events defined in the RegisterEvents implementation.
-    /// Should be called during initialization/startup of the handler.
+    /// This is automatically called during handler construction.
     /// </summary>
     public void SubscribeToEvents() {
         RegisterEvents();
         Console.WriteLine($"{GetType().Name}: Subscribed to all events");
     }
-
 
     /// <summary>
     /// Unsubscribes this handler from all previously registered events.

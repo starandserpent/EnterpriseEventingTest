@@ -28,21 +28,21 @@ internal sealed class Player {
     public int Level => Experience / 100 + 1;
 
     /// <summary>
-    /// Default constructor that generates a new ID automatically
+    /// Default constructor that generates a new ID automatically and leaves the name empty.
     /// </summary>
     public Player() {
         Id = Guid.NewGuid();
     }
 
     /// <summary>
-    /// Constructor with name that generates a new ID automatically
+    /// Constructor that takes a name and generates a new ID automatically by calling the default constructor.
     /// </summary>
     public Player(string name) : this() {
         Name = name;
     }
 
     /// <summary>
-    /// Constructor that allows setting a specific ID
+    /// Constructor that allows setting a specific ID and name.
     /// </summary>
     public Player(Guid id, string name) {
         Id = id;
@@ -50,10 +50,10 @@ internal sealed class Player {
     }
 
     /// <summary>
-    /// Adds experience to the player and handles any level-up logic
+    /// Adds experience to the player and handles any level-up logic.
     /// </summary>
-    /// <param name="amount">Amount of experience to add</param>
-    /// <returns>True if the player leveled up</returns>
+    /// <param name="amount">Amount of experience to add.</param>
+    /// <returns>True if the player leveled up.</returns>
     public bool AddExperience(int amount) {
         int oldLevel = Level;
         Experience += amount;
@@ -61,7 +61,7 @@ internal sealed class Player {
     }
 
     /// <summary>
-    /// Returns a formatted string representation of the player
+    /// Returns a formatted string representation of the player.
     /// </summary>
     public override string ToString() => $"Player: {Name}, ID: {Id}, Level: {Level} (XP: {Experience})";
 }
