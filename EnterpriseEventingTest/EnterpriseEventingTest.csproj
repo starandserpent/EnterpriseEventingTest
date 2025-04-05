@@ -5,4 +5,8 @@
     <LangVersion>13</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Scripts\Core\.gdignore" />
+    <Content Include="Scripts\Domain\.gdignore" />
+  </ItemGroup>
 </Project>
