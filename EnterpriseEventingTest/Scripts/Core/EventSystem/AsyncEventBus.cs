@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EnterpriseEventingTest.Core.EventSystem.Interfaces;
+using Godot;
 
 namespace EnterpriseEventingTest.Core.EventSystem;
 
@@ -22,7 +23,7 @@ internal sealed class AsyncEventBus<T> : IAsyncEventBus<T> {
     public async Task PublishAsync(T eventData) {
 
         Console.ForegroundColor = ConsoleColor.Magenta;
-        Console.WriteLine($"Asyncronous EventBus: Publishing (broadcasting) {typeof(T).Name} event");
+        GD.Print($"Asyncronous EventBus: Publishing (broadcasting) {typeof(T).Name} event");
         Console.ResetColor();
 
         if (PublishedAsync == null)

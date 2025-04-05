@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using EnterpriseEventingTest.Core.EventSystem.Interfaces;
+using Godot;
 
 namespace EnterpriseEventingTest.Core.EventSystem;
 
@@ -31,13 +32,13 @@ internal abstract class EventHandlerBase {
     /// <param name="eventRegistry">The event registry used to access event buses.</param>
     protected EventHandlerBase(EventRegistry eventRegistry) {
         EventRegistry = eventRegistry;
-        
+
         try {
             // Auto-register events during construction
             SubscribeToEvents();
         }
         catch (Exception ex) {
-            Console.WriteLine($"{GetType().Name}: Failed to subscribe to events during construction: {ex.Message}");
+            GD.Print($"{GetType().Name}: Failed to subscribe to events during construction: {ex.Message}");
             throw;
         }
     }
@@ -55,7 +56,7 @@ internal abstract class EventHandlerBase {
     /// </summary>
     public void SubscribeToEvents() {
         RegisterEvents();
-        Console.WriteLine($"{GetType().Name}: Subscribed to all events");
+        GD.Print($"{GetType().Name}: Subscribed to all events");
     }
 
     /// <summary>
@@ -80,7 +81,7 @@ internal abstract class EventHandlerBase {
 
         // Clear registration tracking dictionary
         _registrations.Clear();
-        Console.WriteLine($"{GetType().Name}: Unsubscribed from all events");
+        GD.Print($"{GetType().Name}: Unsubscribed from all events");
     }
 
     /// <summary>
@@ -97,7 +98,7 @@ internal abstract class EventHandlerBase {
         object? bus = genericMethod.Invoke(EventRegistry, []);
 
         if (bus == null) {
-            Console.WriteLine($"Warning: Could not find event bus for event type {eventType.Name}");
+            GD.Print($"Warning: Could not find event bus for event type {eventType.Name}");
         }
 
         return bus;

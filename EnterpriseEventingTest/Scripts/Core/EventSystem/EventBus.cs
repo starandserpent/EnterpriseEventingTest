@@ -1,5 +1,6 @@
 using System;
 using EnterpriseEventingTest.Core.EventSystem.Interfaces;
+using Godot;
 
 namespace EnterpriseEventingTest.Core.EventSystem;
 
@@ -20,7 +21,7 @@ internal sealed class EventBus<T> : IEventBus<T> {
     public void Publish(T eventData) {
 
         Console.ForegroundColor = ConsoleColor.Magenta;
-        Console.WriteLine($"Synchronous EventBus: Publishing (broadcasting) {typeof(T).Name} event");
+        GD.Print($"Synchronous EventBus: Publishing (broadcasting) {typeof(T).Name} event");
         Console.ResetColor();
 
         Published?.Invoke(eventData);

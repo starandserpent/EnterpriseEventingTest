@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EnterpriseEventingTest.Core.EventSystem;
 using EnterpriseEventingTest.Domain.Player.Events;
+using Godot;
 
 namespace EnterpriseEventingTest.Domain.Player.Services;
 
@@ -182,11 +183,11 @@ internal sealed class PlayerManager {
     /// Display information about all registered players
     /// </summary>
     private void DisplayAllPlayers() {
-        Console.WriteLine("--- All Players ---");
+        GD.Print("--- All Players ---");
         foreach (var player in GetAllPlayers()) {
-            Console.WriteLine(player.ToString());
+            GD.Print(player.ToString());
         }
-        Console.WriteLine("--- End ---");
+        GD.Print("--- End ---");
     }
 
 }

@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using EnterpriseEventingTest.Core.EventSystem;
 using EnterpriseEventingTest.Domain.Player.Events;
+using Godot;
 
 namespace EnterpriseEventingTest.Domain.Player.Services;
 
@@ -45,7 +46,7 @@ internal sealed class PlayerEventHandler : EventHandlerBase {
         player.AddExperience(50);
 
         Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine($"PlayerEventHandler: Player {player.Name} (ID: {player.Id}) initialized with {player.Experience} XP at level {player.Level}.");
+        GD.Print($"PlayerEventHandler: Player {player.Name} (ID: {player.Id}) initialized with {player.Experience} XP at level {player.Level}.");
         Console.ResetColor();
 
         // Simulate some async processing
@@ -59,7 +60,7 @@ internal sealed class PlayerEventHandler : EventHandlerBase {
     /// <returns>A task representing the asynchronous operation</returns>
     private async Task OnPlayerUpdatedAsync(PlayerUpdatedEvent eventData) {
         Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine($"PlayerEventHandler: Player {eventData.Player.Name} was updated with {eventData.Player.Experience} XP at level {eventData.Player.Level}.");
+        GD.Print($"PlayerEventHandler: Player {eventData.Player.Name} was updated with {eventData.Player.Experience} XP at level {eventData.Player.Level}.");
         Console.ResetColor();
 
         await Task.Delay(50);
@@ -72,7 +73,7 @@ internal sealed class PlayerEventHandler : EventHandlerBase {
     /// <returns>A task representing the asynchronous operation</returns>
     private async Task OnPlayerRemovedAsync(PlayerRemovedEvent eventData) {
         Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine($"PlayerEventHandler: Player with ID {eventData.PlayerId} was removed from the system.");
+        GD.Print($"PlayerEventHandler: Player with ID {eventData.PlayerId} was removed from the system.");
         Console.ResetColor();
 
         await Task.Delay(50);

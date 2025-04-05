@@ -40,14 +40,17 @@ internal partial class Main : Node {
             // 3. Run the player workflow demonstration
             if (_playerService != null) {
                 await _playerService.DemonstratePlayerWorkflowAsync();
+            } else {
+                GD.Print("Main: PlayerService is null. Cannot demonstrate player workflow. Something must have gone wrong.");
             }
+
         } catch (Exception ex) {
-            Console.WriteLine($"Main: Error in Main._Ready: {ex.Message}");
+            GD.Print($"Main: Error in Main._Ready: {ex.Message}");
         }
     }
 
     /// <summary>
-    /// Initializes all services with the provided event registry. 
+    /// Initializes all services with the provided event registry.
     /// Event handlers will automatically register their events during construction.
     /// </summary>
     /// <returns>True if all services were initialized successfully, false otherwise</returns>
@@ -58,7 +61,7 @@ internal partial class Main : Node {
             _playerService = new PlayerManager(eventRegistry);
             _playerEventSubscriber = new PlayerEventHandler(eventRegistry);
         } catch (Exception e) {
-            Console.WriteLine($"Main: Error initializing services. {e.Message}");
+            GD.Print($"Main: Error initializing services. {e.Message}");
             throw;
         }
     }
@@ -68,11 +71,13 @@ internal partial class Main : Node {
     /// Unsubscribes from events to prevent memory leaks.
     /// </summary>
     public override void _ExitTree() {
+
         // Unsubscribe from events when quitting - this must be done explicitly
         _playerEventSubscriber?.UnsubscribeFromEvents();
 
-        Console.WriteLine("Main: Unsubscribed from events before quitting.");
+        GD.Print("Main: Unsubscribed from events before quitting.");
 
         base._ExitTree();
     }
+
 }
