@@ -52,21 +52,26 @@ internal abstract class EventHandlerBase {
     /// Subscribes this handler to all events defined in the RegisterEvents implementation.
     /// This is automatically called during handler construction.
     /// </summary>
-    public void SubscribeToEvents() {
-        RegisterEvents();
-        GD.Print($"{GetType().Name}: Subscribed to all events");
-    }
+    public void SubscribeToEvents() => RegisterEvents();
 
     /// <summary>
     /// Unsubscribes this handler from all previously registered events.
     /// </summary>
     public void UnsubscribeFromEvents() {
         foreach (var registration in _registrations) {
+            // Use properties via interface
+            if (registration is IEventRegistrationInfo info) {
+                Console.ForegroundColor = ConsoleColor.Red;
+                GD.Print($"[{GetType().Name}]: Unsubscribing from {info.EventTypeName} event handled by {info.HandlerMethodName}");
+                Console.ResetColor();
+            } else {
+                Console.ForegroundColor = ConsoleColor.Red;
+                GD.Print($"[{GetType().Name}]: Unsubscribing from event handler");
+                Console.ResetColor();
+            }
             registration.Dispose();
         }
-        
         _registrations.Clear();
-        GD.Print($"{GetType().Name}: Unsubscribed from all events");
     }
 
     /// <summary>
@@ -79,25 +84,14 @@ internal abstract class EventHandlerBase {
     protected void RegisterHandler<TEvent>(Func<TEvent, Task> handler) {
         IAsyncEventBus<TEvent> bus = EventRegistry.GetAsyncEventBus<TEvent>();
         bus.PublishedAsync += handler;
-        
-        // Track the registration using a disposable registration object
-        _registrations.Add(new EventRegistration<TEvent>(bus, handler));
+
+        // Create and store the registration object
+        var registration = new EventRegistration<TEvent>(bus, handler);
+        _registrations.Add(registration);
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        GD.Print($"[{GetType().Name}]: Registered handler for {typeof(TEvent).Name} event -> {handler.Method.Name}().");
+        Console.ResetColor();
     }
 
-    /// <summary>
-    /// Private class to track event registrations and handle unsubscription.
-    /// </summary>
-    private class EventRegistration<TEvent> : IDisposable {
-        private readonly IAsyncEventBus<TEvent> _bus;
-        private readonly Func<TEvent, Task> _handler;
-
-        public EventRegistration(IAsyncEventBus<TEvent> bus, Func<TEvent, Task> handler) {
-            _bus = bus;
-            _handler = handler;
-        }
-
-        public void Dispose() {
-            _bus.PublishedAsync -= _handler;
-        }
-    }
 }
