@@ -1,6 +1,5 @@
 using System;
 using EnterpriseEventingTest.Core.EventSystem.Interfaces;
-using Godot;
 
 namespace EnterpriseEventingTest.Core.EventSystem;
 
@@ -18,13 +17,5 @@ internal sealed class EventBus<T> : IEventBus<T> {
     /// Publishes an event to all subscribers.
     /// </summary>
     /// <param name="eventData">The event data to publish</param>
-    public void Publish(T eventData) {
-
-        Console.ForegroundColor = ConsoleColor.Magenta;
-        GD.Print($"[EventBus] Publishing (broadcasting) {typeof(T).Name} event");
-        Console.ResetColor();
-
-        Published?.Invoke(eventData);
-    }
-
+    public void Publish(T eventData) => Published?.Invoke(eventData);
 }

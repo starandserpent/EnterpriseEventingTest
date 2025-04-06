@@ -7,32 +7,30 @@ using Godot;
 namespace EnterpriseEventingTest.Domain.Player.Services;
 
 /// <summary>
-/// Service that handles player events from the event registry.
+/// Service that handles incoming events for the player domain. These are generally events which are relevant
+/// to the player domain and are published by other services to which Player is interested in subscribing.
 /// </summary>
 internal sealed class PlayerEventHandler : EventHandlerBase {
 
     /// <summary>
-    /// Constructor that takes an event registry dependency
+    /// Constructor that takes an event registry dependency and passes it on to the base class.
+    /// which is responsible for managing event subscriptions and unsubscriptions. Do not remove.
     /// </summary>
-    public PlayerEventHandler(EventRegistry eventRegistry) : base(eventRegistry) {
-        // No need for private _eventRegistry as we use the protected EventRegistry from base
-    }
+    public PlayerEventHandler(EventRegistry eventRegistry) : base(eventRegistry) {}
 
     /// <summary>
     /// Registers the event handlers for player events. This method is called when the service is initialized.
     /// It sets up the event handlers for player events. You can add new events by simply adding a new line
     /// in this method which calls:
     /// <code>
-    /// <![CDATA[
-    /// RegisterHandler<NewEventType>(OnNewEventAsync);
-    /// ]]>
+    /// RegisterHandler&lt; NewEventType &gt;(OnNewEventAsync);
     /// </code>
     /// Where NewEventType is the type of the new event and OnNewEventAsync is the method that handles the event.
     /// </summary>
     protected override void RegisterEvents() {
-        RegisterHandler<PlayerAddedEvent>(OnPlayerAddedAsync);
-        RegisterHandler<PlayerUpdatedEvent>(OnPlayerUpdatedAsync);
-        RegisterHandler<PlayerRemovedEvent>(OnPlayerRemovedAsync);
+        base.RegisterHandler<PlayerAddedEvent>(OnPlayerAddedAsync);
+        base.RegisterHandler<PlayerUpdatedEvent>(OnPlayerUpdatedAsync);
+        base.RegisterHandler<PlayerRemovedEvent>(OnPlayerRemovedAsync);
 
         // New events just need one line here
     }

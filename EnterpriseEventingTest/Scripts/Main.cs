@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using EnterpriseEventingTest.Core.EventSystem;
+using EnterpriseEventingTest.Domain.Logger.Services;
 using EnterpriseEventingTest.Domain.Player.Services;
 
 namespace EnterpriseEventingTest;
@@ -26,6 +27,8 @@ internal partial class Main : Node {
     /// Event handlers automatically subscribe to events during construction.
     /// </summary>
     private PlayerEventHandler? _playerEventHandler;
+
+    private LoggerEventHandler? _loggerEventHandler;
 
     /// <summary>
     /// Called when the node enters the scene tree for the first time.
@@ -64,6 +67,7 @@ internal partial class Main : Node {
         try {
             _playerManager = new PlayerManager(eventRegistry);
             _playerEventHandler = new PlayerEventHandler(eventRegistry);
+            _loggerEventHandler = new LoggerEventHandler(eventRegistry);
         } catch (Exception e) {
             GD.Print($"Main: Error initializing services. {e.Message}");
             throw;
@@ -78,8 +82,9 @@ internal partial class Main : Node {
 
         // Unsubscribe from events when quitting - this must be done explicitly
         _playerEventHandler?.UnsubscribeFromEvents();
+        _loggerEventHandler?.UnsubscribeFromEvents();
 
-        GD.Print("Main: Unsubscribed from events before quitting.");
+        GD.Print("Main: Unsubscribed from all events before quitting.");
 
         base._ExitTree();
     }

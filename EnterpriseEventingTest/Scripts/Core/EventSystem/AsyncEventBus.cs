@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EnterpriseEventingTest.Core.EventSystem.Interfaces;
-using Godot;
 
 namespace EnterpriseEventingTest.Core.EventSystem;
 
@@ -22,12 +21,9 @@ internal sealed class AsyncEventBus<T> : IAsyncEventBus<T> {
     /// <param name="eventData">The event data to publish</param>
     public async Task PublishAsync(T eventData) {
 
-        Console.ForegroundColor = ConsoleColor.Magenta;
-        GD.Print($"[AsyncEventBus] Publishing (broadcasting) {typeof(T).Name} event");
-        Console.ResetColor();
-
-        if (PublishedAsync == null)
+        if (PublishedAsync == null) {
             return;
+        }
 
         // Get all subscribers and invoke them in parallel
         Task[] handlers = PublishedAsync.GetInvocationList()
