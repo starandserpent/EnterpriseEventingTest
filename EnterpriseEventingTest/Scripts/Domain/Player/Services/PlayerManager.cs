@@ -148,16 +148,8 @@ internal sealed class PlayerManager {
     /// <param name="names">The names of the players to create</param>
     /// <returns>A list of the created players after being processed by all event subscribers</returns>
     private async Task<List<Model.Player>> CreateMultiplePlayersAsync(params string[] names) {
-        // Convert ValueTasks to Tasks immediately
-        Task<Model.Player>[] taskArray = names
-                                         .Select(name => CreatePlayerAsync(name).AsTask())
-                                         .ToArray();
-
-        // Await all tasks to complete
-        await Task.WhenAll(taskArray);
-
-        // Now it's safe to get results
-        return taskArray.Select(t => t.Result).ToList();
+        return await ExecuteTasksInParallelAsync(names, 
+            name => CreatePlayerAsync(name).AsTask());
     }
 
     /// <summary>
@@ -166,18 +158,31 @@ internal sealed class PlayerManager {
     /// <param name="playerExperienceMap">Dictionary mapping player IDs to experience amounts</param>
     /// <returns>A list of the updated players</returns>
     private async Task<List<Model.Player>> AddExperienceToMultiplePlayersAsync(Dictionary<Guid, int> playerExperienceMap) {
-        // Convert ValueTasks to Tasks immediately
-        Task<Model.Player>[] taskArray = playerExperienceMap
-                                         .Select(pair => AddExperienceAsync(pair.Key, pair.Value).AsTask())
-                                         .ToArray();
-
-        // Await all tasks to complete
-        await Task.WhenAll(taskArray);
-
-        // Now it's safe to get results
-        return taskArray.Select(t => t.Result).ToList();
+        return await ExecuteTasksInParallelAsync(playerExperienceMap, 
+            pair => AddExperienceAsync(pair.Key, pair.Value).AsTask());
     }
 
+    /// <summary>
+    /// Generic helper method to execute multiple tasks in parallel
+    /// </summary>
+    /// <typeparam name="TSource">The source collection item type</typeparam>
+    /// <typeparam name="TResult">The result type</typeparam>
+    /// <param name="items">Collection of items to process</param>
+    /// <param name="taskSelector">Function to create a task from each item</param>
+    /// <returns>List of results from all completed tasks</returns>
+    private async Task<List<TResult>> ExecuteTasksInParallelAsync<TSource, TResult>(
+        IEnumerable<TSource> items, 
+        Func<TSource, Task<TResult>> taskSelector) {
+        
+        // Convert to array of tasks
+        var tasks = items.Select(taskSelector).ToArray();
+        
+        // Await all tasks to complete
+        await Task.WhenAll(tasks);
+        
+        // Return results
+        return tasks.Select(t => t.Result).ToList();
+    }
 
     /// <summary>
     /// Display information about all registered players

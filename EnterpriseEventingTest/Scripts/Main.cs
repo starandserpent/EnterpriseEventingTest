@@ -38,7 +38,8 @@ internal partial class Main : Node {
 
             // 2. Initialize all services
             InitializeServices(_eventRegistry);
-            // Event subscription happens automatically in EventHandlerBase constructor
+            // Event subscription happens automatically in EventHandlerBase constructor and is called from
+            // overrides in each specific event handler.
 
             // 3. Run the player workflow demonstration
             if (_playerManager != null) {

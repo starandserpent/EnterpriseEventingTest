@@ -19,10 +19,15 @@ internal sealed class PlayerEventHandler : EventHandlerBase {
     }
 
     /// <summary>
-    /// Registers the event handlers for player events.
-    /// This method is called when the service is initialized.
-    /// It sets up the event handlers for player events.
-    /// This is where you can add new events.
+    /// Registers the event handlers for player events. This method is called when the service is initialized.
+    /// It sets up the event handlers for player events. You can add new events by simply adding a new line
+    /// in this method which calls:
+    /// <code>
+    /// <![CDATA[
+    /// RegisterHandler<NewEventType>(OnNewEventAsync);
+    /// ]]>
+    /// </code>
+    /// Where NewEventType is the type of the new event and OnNewEventAsync is the method that handles the event.
     /// </summary>
     protected override void RegisterEvents() {
         RegisterHandler<PlayerAddedEvent>(OnPlayerAddedAsync);
@@ -40,13 +45,13 @@ internal sealed class PlayerEventHandler : EventHandlerBase {
     /// <returns>A task representing the asynchronous operation</returns>
     private async Task OnPlayerAddedAsync(PlayerAddedEvent eventData) {
         // Get the player from the event
-        var player = eventData.Player;
+        Model.Player player = eventData.Player;
 
         // Assign some initial experience to the new player
         player.AddExperience(50);
 
         Console.ForegroundColor = ConsoleColor.Cyan;
-        GD.Print($"PlayerEventHandler: Player {player.Name} (ID: {player.Id}) initialized with {player.Experience} XP at level {player.Level}.");
+        GD.Print($"[Event] PlayerEventHandler: Player {player.Name} (ID: {player.Id}) initialized with {player.Experience} XP at level {player.Level}.");
         Console.ResetColor();
 
         // Simulate some async processing
@@ -60,7 +65,7 @@ internal sealed class PlayerEventHandler : EventHandlerBase {
     /// <returns>A task representing the asynchronous operation</returns>
     private async Task OnPlayerUpdatedAsync(PlayerUpdatedEvent eventData) {
         Console.ForegroundColor = ConsoleColor.Yellow;
-        GD.Print($"PlayerEventHandler: Player {eventData.Player.Name} was updated with {eventData.Player.Experience} XP at level {eventData.Player.Level}.");
+        GD.Print($"[Event] PlayerEventHandler: Player {eventData.Player.Name} was updated with {eventData.Player.Experience} XP at level {eventData.Player.Level}.");
         Console.ResetColor();
 
         await Task.Delay(50);
@@ -73,7 +78,7 @@ internal sealed class PlayerEventHandler : EventHandlerBase {
     /// <returns>A task representing the asynchronous operation</returns>
     private async Task OnPlayerRemovedAsync(PlayerRemovedEvent eventData) {
         Console.ForegroundColor = ConsoleColor.Red;
-        GD.Print($"PlayerEventHandler: Player with ID {eventData.PlayerId} was removed from the system.");
+        GD.Print($"[Event] PlayerEventHandler: Player with ID {eventData.PlayerId} was removed from the system.");
         Console.ResetColor();
 
         await Task.Delay(50);

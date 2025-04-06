@@ -21,7 +21,7 @@ internal sealed class EventBus<T> : IEventBus<T> {
     public void Publish(T eventData) {
 
         Console.ForegroundColor = ConsoleColor.Magenta;
-        GD.Print($"Synchronous EventBus: Publishing (broadcasting) {typeof(T).Name} event");
+        GD.Print($"[EventBus] Publishing (broadcasting) {typeof(T).Name} event");
         Console.ResetColor();
 
         Published?.Invoke(eventData);

@@ -23,7 +23,7 @@ internal sealed class AsyncEventBus<T> : IAsyncEventBus<T> {
     public async Task PublishAsync(T eventData) {
 
         Console.ForegroundColor = ConsoleColor.Magenta;
-        GD.Print($"Asyncronous EventBus: Publishing (broadcasting) {typeof(T).Name} event");
+        GD.Print($"[AsyncEventBus] Publishing (broadcasting) {typeof(T).Name} event");
         Console.ResetColor();
 
         if (PublishedAsync == null)

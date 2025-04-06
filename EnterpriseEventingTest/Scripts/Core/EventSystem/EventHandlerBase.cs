@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
 using EnterpriseEventingTest.Core.EventSystem.Interfaces;
 using Godot;
@@ -21,9 +20,8 @@ internal abstract class EventHandlerBase {
 
     /// <summary>
     /// Tracks all event registrations made by this handler for proper cleanup.
-    /// Key: Event type, Value: List of handlers registered for that event type.
     /// </summary>
-    private readonly Dictionary<Type, List<Delegate>> _registrations = new();
+    private readonly List<IDisposable> _registrations = new();
 
     /// <summary>
     /// Initializes a new instance of the event handler with the specified event registry.
@@ -61,47 +59,14 @@ internal abstract class EventHandlerBase {
 
     /// <summary>
     /// Unsubscribes this handler from all previously registered events.
-    /// Uses reflection to properly remove event handlers from their respective buses.
     /// </summary>
     public void UnsubscribeFromEvents() {
-        foreach (var (eventType, handlers) in _registrations) {
-            // Get the event bus for this event type
-            object? bus = GetEventBusForType(eventType);
-            if (bus == null) continue;
-
-            // Find the PublishedAsync event on the bus (once per event type)
-            EventInfo? eventInfo = bus.GetType().GetEvent("PublishedAsync");
-            if (eventInfo == null) continue;
-
-            // Remove all handlers for this event type
-            foreach (var handler in handlers) {
-                eventInfo.RemoveEventHandler(bus, handler);
-            }
+        foreach (var registration in _registrations) {
+            registration.Dispose();
         }
-
-        // Clear registration tracking dictionary
+        
         _registrations.Clear();
         GD.Print($"{GetType().Name}: Unsubscribed from all events");
-    }
-
-    /// <summary>
-    /// Retrieves the appropriate event bus for a given event type using reflection.
-    /// </summary>
-    /// <param name="eventType">The type of event to get the bus for</param>
-    /// <returns>The event bus instance or null if not found</returns>
-    private object? GetEventBusForType(Type eventType) {
-        MethodInfo? method = typeof(EventRegistry).GetMethod("GetAsyncEventBus",
-                                                             BindingFlags.Public | BindingFlags.Instance);
-        if (method == null) return null;
-
-        MethodInfo genericMethod = method.MakeGenericMethod(eventType);
-        object? bus = genericMethod.Invoke(EventRegistry, []);
-
-        if (bus == null) {
-            GD.Print($"Warning: Could not find event bus for event type {eventType.Name}");
-        }
-
-        return bus;
     }
 
     /// <summary>
@@ -112,15 +77,27 @@ internal abstract class EventHandlerBase {
     /// <typeparam name="TEvent">The type of event to handle.</typeparam>
     /// <param name="handler">The async function that will handle the event.</param>
     protected void RegisterHandler<TEvent>(Func<TEvent, Task> handler) {
-        Type eventType = typeof(TEvent);
         IAsyncEventBus<TEvent> bus = EventRegistry.GetAsyncEventBus<TEvent>();
         bus.PublishedAsync += handler;
-
-        // Track the registration for later cleanup
-        if (!_registrations.ContainsKey(eventType))
-            _registrations[eventType] = new List<Delegate>();
-
-        _registrations[eventType].Add(handler);
+        
+        // Track the registration using a disposable registration object
+        _registrations.Add(new EventRegistration<TEvent>(bus, handler));
     }
 
+    /// <summary>
+    /// Private class to track event registrations and handle unsubscription.
+    /// </summary>
+    private class EventRegistration<TEvent> : IDisposable {
+        private readonly IAsyncEventBus<TEvent> _bus;
+        private readonly Func<TEvent, Task> _handler;
+
+        public EventRegistration(IAsyncEventBus<TEvent> bus, Func<TEvent, Task> handler) {
+            _bus = bus;
+            _handler = handler;
+        }
+
+        public void Dispose() {
+            _bus.PublishedAsync -= _handler;
+        }
+    }
 }

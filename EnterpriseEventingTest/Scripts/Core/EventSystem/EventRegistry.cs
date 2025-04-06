@@ -22,20 +22,7 @@ internal sealed class EventRegistry {
     /// notified when an event is published asynchronously. Order of execution is not guaranteed.
     /// </summary>
     public IAsyncEventBus<T> GetAsyncEventBus<T>() {
-        // This code is implementing a registry pattern with lazy initialization for event buses.
-
-        // Creates a runtime Type object representing the generic type parameter.
-        Type eventType = typeof(T);
-
-        // Check if an event bus of the specified type already exists in the dictionary.
-        if (_eventBuses.TryGetValue(eventType, out var bus)) {
-            return (IAsyncEventBus<T>) bus;
-        }
-
-        // If it doesn't exist, create a new event bus of the specified type.
-        bus = new AsyncEventBus<T>();
-        _eventBuses[eventType] = bus;
-        return (IAsyncEventBus<T>) bus;
+        return GetOrCreateEventBus<IAsyncEventBus<T>, AsyncEventBus<T>>();
     }
 
     /// <summary>
@@ -45,20 +32,25 @@ internal sealed class EventRegistry {
     /// notified when an event is published synchronously. Order of execution is guaranteed.
     /// </summary>
     public IEventBus<T> GetEventBus<T>() {
-        // This code is implementing a registry pattern with lazy initialization for event buses.
-
-        // Creates a runtime Type object representing the generic type parameter.
-        Type eventType = typeof(T);
-
-        // Check if an event bus of the specified type already exists in the dictionary.
-        if (_eventBuses.TryGetValue(eventType, out var bus)) {
-            return (IEventBus<T>) bus;
-        }
-
-        // If it doesn't exist, create a new event bus of the specified type.
-        bus = new EventBus<T>();
-        _eventBuses[eventType] = bus;
-        return (IEventBus<T>) bus;
+        return GetOrCreateEventBus<IEventBus<T>, EventBus<T>>();
     }
 
+    /// <summary>
+    /// Gets an existing or creates a new event bus of the specified interface and implementation type.
+    /// </summary>
+    private TInterface GetOrCreateEventBus<TInterface, TImplementation>() 
+        where TImplementation : class, TInterface, new() {
+        
+        Type eventType = typeof(TInterface);
+
+        // Check if an event bus of the specified type already exists in the dictionary
+        if (_eventBuses.TryGetValue(eventType, out var bus)) {
+            return (TInterface)bus;
+        }
+
+        // If it doesn't exist, create a new event bus of the specified type
+        var newBus = new TImplementation();
+        _eventBuses[eventType] = newBus;
+        return newBus;
+    }
 }
