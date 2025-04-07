@@ -18,4 +18,10 @@ internal interface IAsyncEventBus<T> {
     /// </summary>
     /// <param name="eventData">The event data to publish</param>
     Task PublishAsync(T eventData);
+
+    /// <summary>
+    /// Checks if the event has any subscribers.
+    /// </summary>
+    /// <returns></returns>
+    bool HasSubscribers();
 }

@@ -8,7 +8,7 @@ namespace EnterpriseEventingTest.Core.EventSystem;
 /// Central registry for all event buses in the application.
 /// Provides a single point to register and retrieve event buses.
 /// </summary>
-internal sealed class EventRegistry {
+internal class EventRegistry {
 
     /// <summary>
     /// Dictionary to hold event buses for different event types, e.g. PlayerAddedEvent, PlayerUpdatedEvent, etc.
@@ -38,9 +38,9 @@ internal sealed class EventRegistry {
     /// <summary>
     /// Gets an existing or creates a new event bus of the specified interface and implementation type.
     /// </summary>
-    private TInterface GetOrCreateEventBus<TInterface, TImplementation>() 
+    private TInterface GetOrCreateEventBus<TInterface, TImplementation>()
         where TImplementation : class, TInterface, new() {
-        
+
         Type eventType = typeof(TInterface);
 
         // Check if an event bus of the specified type already exists in the dictionary

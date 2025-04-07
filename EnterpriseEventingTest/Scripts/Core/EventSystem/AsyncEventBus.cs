@@ -34,4 +34,10 @@ internal sealed class AsyncEventBus<T> : IAsyncEventBus<T> {
         // Wait for all handlers to complete
         await Task.WhenAll(handlers);
     }
+    
+    /// <summary>
+    /// Checks if the event has any subscribers.
+    /// </summary>
+    /// <returns>True if the event has subscribers, false otherwise.</returns>
+    public bool HasSubscribers() => PublishedAsync != null;
 }

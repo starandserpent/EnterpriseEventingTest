@@ -10,7 +10,7 @@ internal sealed class Player {
     /// <summary>
     /// The unique identifier for the player.
     /// </summary>
-    public Guid Id { get; private set; }
+    public Guid Id { get; internal set; }
 
     /// <summary>
     /// The player's name.

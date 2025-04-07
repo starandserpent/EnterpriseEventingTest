@@ -17,4 +17,10 @@ internal interface IEventBus<T> {
     /// </summary>
     /// <param name="eventData">The event data to publish</param>
     void Publish(T eventData);
+
+    /// <summary>
+    /// Checks if the event has any subscribers.
+    /// </summary>
+    /// <returns></returns>
+    bool HasSubscribers();
 }

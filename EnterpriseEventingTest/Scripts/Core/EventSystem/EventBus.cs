@@ -18,4 +18,12 @@ internal sealed class EventBus<T> : IEventBus<T> {
     /// </summary>
     /// <param name="eventData">The event data to publish</param>
     public void Publish(T eventData) => Published?.Invoke(eventData);
+
+    /// <summary>
+    /// Checks if the event has any subscribers.
+    /// </summary>
+    /// <returns>
+    /// True if the event has subscribers, false otherwise.
+    /// </returns>
+    public bool HasSubscribers() => Published != null;
 }
