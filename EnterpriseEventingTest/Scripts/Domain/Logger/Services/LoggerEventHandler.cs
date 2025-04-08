@@ -12,6 +12,15 @@ internal class LoggerEventHandler : EventHandlerBase {
 
     protected override void RegisterEvents() {
         RegisterHandler<PlayerAddedEvent>(OnPlayerAddedAsync);
+
+        // Testing EventMiniBus events.
+        EventMiniBus.Instance.PlayerDied += OnPlayerDied;
+    }
+
+    private void OnPlayerDied(PlayerDiedEventArgs @event) {
+        Console.ForegroundColor = ConsoleColor.White;
+        GD.Print($"[Event] LoggerEventHandler: Player {@event.Player.Name} (ID: {@event.Player.Id}) died at position {@event.Position}.");
+        Console.ResetColor();
     }
 
     // Log the player addition event.

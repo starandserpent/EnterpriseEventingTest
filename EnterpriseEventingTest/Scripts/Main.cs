@@ -3,6 +3,7 @@ using System;
 using EnterpriseEventingTest.Core.EventSystem;
 using EnterpriseEventingTest.Domain.Logger.Services;
 using EnterpriseEventingTest.Domain.Player.Services;
+using EnterpriseEventingTest.Domain.World.Services;
 
 namespace EnterpriseEventingTest;
 
@@ -30,6 +31,10 @@ internal partial class Main : Node {
 
     private LoggerEventHandler? _loggerEventHandler;
 
+    // The world manager that manages domain specific world-related operations.
+    // Not directly related to the event system, but included for testing.
+    private WorldManager? _worldManager;
+
     /// <summary>
     /// Called when the node enters the scene tree for the first time.
     /// Sets up the event system and demonstrates creating a player.
@@ -50,6 +55,9 @@ internal partial class Main : Node {
             } else {
                 GD.Print("Main: PlayerService is null. Cannot demonstrate player workflow. Something must have gone wrong.");
             }
+
+            // Initialize the world.
+            _worldManager = new WorldManager();
 
         } catch (Exception ex) {
             GD.Print($"Main: Error in Main._Ready: {ex.Message}");

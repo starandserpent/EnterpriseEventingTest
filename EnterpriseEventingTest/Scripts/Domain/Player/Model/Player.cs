@@ -1,4 +1,6 @@
 using System;
+using EnterpriseEventingTest.Core.EventSystem;
+using Godot;
 
 namespace EnterpriseEventingTest.Domain.Player.Model;
 
@@ -23,11 +25,20 @@ internal sealed class Player {
     public int Experience { get; set; }
 
     /// <summary>
+    /// Health points of the player.
+    /// </summary>
+    public int Health { get; set; } = 10;
+
+    /// <summary>
     /// The player's current level, calculated from experience.
     /// </summary>
     public int Level => Experience / 100 + 1;
 
     /// <summary>
+    /// Position is the player's position in the game world.
+    /// <summary>
+    public Vector2 Position { get; set; } = new (0, 0);
+
     /// Default constructor that generates a new ID automatically and leaves the name empty.
     /// </summary>
     public Player() {
@@ -64,4 +75,23 @@ internal sealed class Player {
     /// Returns a formatted string representation of the player.
     /// </summary>
     public override string ToString() => $"Player: {Name}, ID: {Id}, Level: {Level} (XP: {Experience})";
+
+    public void TakeDamage(int damage, Enemy.Model.Enemy enemy) {
+
+        if (damage <= 0) {
+            return;
+        }
+
+        if (Health - damage <= 0) {
+            Health = 0;
+            Die(enemy);
+        } else {
+            Health -= damage;
+        }
+    }
+
+    private void Die(Enemy.Model.Enemy enemy) {
+        EventMiniBus.Instance.InvokePlayerDied(new PlayerDiedEventArgs(this, Position, enemy));
+    }
+
 }
