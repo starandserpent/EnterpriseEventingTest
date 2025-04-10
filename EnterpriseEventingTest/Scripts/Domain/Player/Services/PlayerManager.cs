@@ -100,6 +100,16 @@ internal sealed class PlayerManager {
     }
 
     /// <summary>
+    /// Creates a new player with the specified name and position.
+    /// </summary>
+    /// <param name="name">The name of the player to create</param>
+    /// <param name="position">The initial position of the player</param>
+    public async ValueTask<Model.Player> CreatePlayerAsync(string name, Vector2 position) {
+        Model.Player player = new (name, position);
+        return await AddPlayerAsync(player);
+    }
+
+    /// <summary>
     /// Adds experience to a player and updates them
     /// </summary>
     /// <param name="playerId">ID of the player to modify</param>
@@ -148,8 +158,26 @@ internal sealed class PlayerManager {
     /// <param name="names">The names of the players to create</param>
     /// <returns>A list of the created players after being processed by all event subscribers</returns>
     private async Task<List<Model.Player>> CreateMultiplePlayersAsync(params string[] names) {
-        return await ExecuteTasksInParallelAsync(names, 
+        return await ExecuteTasksInParallelAsync(names,
             name => CreatePlayerAsync(name).AsTask());
+    }
+
+    /// <summary>
+    /// Creates multiple players with the specified names and positions.
+    /// </summary>
+    /// <param name="names">The names of the players to create</param>
+    /// <param name="positions">The initial positions of the players</param>
+    /// <returns>A list of the created players after being processed by all event subscribers</returns>
+    private async Task<List<Model.Player>> CreateMultiplePlayersAsync(
+        string[] names,
+        Vector2[] positions) {
+
+        if (names.Length != positions.Length) {
+            throw new ArgumentException("PlayerManager: Names and positions arrays must have the same length");
+        }
+
+        return await ExecuteTasksInParallelAsync(names.Zip(positions),
+            pair => CreatePlayerAsync(pair.First, pair.Second).AsTask());
     }
 
     /// <summary>
@@ -158,7 +186,7 @@ internal sealed class PlayerManager {
     /// <param name="playerExperienceMap">Dictionary mapping player IDs to experience amounts</param>
     /// <returns>A list of the updated players</returns>
     private async Task<List<Model.Player>> AddExperienceToMultiplePlayersAsync(Dictionary<Guid, int> playerExperienceMap) {
-        return await ExecuteTasksInParallelAsync(playerExperienceMap, 
+        return await ExecuteTasksInParallelAsync(playerExperienceMap,
             pair => AddExperienceAsync(pair.Key, pair.Value).AsTask());
     }
 
@@ -171,15 +199,15 @@ internal sealed class PlayerManager {
     /// <param name="taskSelector">Function to create a task from each item</param>
     /// <returns>List of results from all completed tasks</returns>
     private async Task<List<TResult>> ExecuteTasksInParallelAsync<TSource, TResult>(
-        IEnumerable<TSource> items, 
+        IEnumerable<TSource> items,
         Func<TSource, Task<TResult>> taskSelector) {
-        
+
         // Convert to array of tasks
         var tasks = items.Select(taskSelector).ToArray();
-        
+
         // Await all tasks to complete
         await Task.WhenAll(tasks);
-        
+
         // Return results
         return tasks.Select(t => t.Result).ToList();
     }

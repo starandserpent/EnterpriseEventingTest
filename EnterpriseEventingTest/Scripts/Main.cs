@@ -57,7 +57,7 @@ internal partial class Main : Node {
             }
 
             // Initialize the world.
-            _worldManager = new WorldManager();
+            _worldManager = new WorldManager(_playerManager);
 
         } catch (Exception ex) {
             GD.Print($"Main: Error in Main._Ready: {ex.Message}");

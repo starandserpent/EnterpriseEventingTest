@@ -1,5 +1,5 @@
 using System;
-using EnterpriseEventingTest.Core.EventSystem;
+using EnterpriseEventingTest.Core.EventMiniBusSystem;
 using Godot;
 
 namespace EnterpriseEventingTest.Domain.Player.Model;
@@ -59,6 +59,27 @@ internal sealed class Player {
         Id = id;
         Name = name;
     }
+
+    public Player(string name, Vector2 position) : this(name) {
+        Position = position;
+    }
+
+    public Player(Guid id, string name, Vector2 position) : this(id, name) {
+        Position = position;
+    }
+
+    public Player(Guid id, string name, Vector2 position, int health) : this(id, name, position) {
+        Health = health;
+    }
+
+    public Player(Guid id, string name, Vector2 position, int health, int experience) : this(id, name, position, health) {
+        Experience = experience;
+    }
+
+    public Player(Guid id, string name, Vector2 position, int health, int experience, int level) : this(id, name, position, health, experience) {
+        Experience = level * 100 - 100;
+    }
+
 
     /// <summary>
     /// Adds experience to the player and handles any level-up logic.

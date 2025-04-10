@@ -3,7 +3,7 @@ using EnterpriseEventingTest.Domain.Enemy.Model;
 using EnterpriseEventingTest.Domain.Player.Model;
 using Godot;
 
-namespace EnterpriseEventingTest.Core.EventSystem;
+namespace EnterpriseEventingTest.Core.EventMiniBusSystem;
 
 /// <summary>
 /// EventBus is a simpleevent bus that allows for event subscription and invocation.
@@ -12,7 +12,7 @@ namespace EnterpriseEventingTest.Core.EventSystem;
 /// 2. Define the mappings for the events - The mappings are used to map the events to the event handlers.
 /// 3. Define the event arguments.
 /// </summary>
-internal class EventMiniBus {
+internal sealed class EventMiniBus {
 
     // Singleton.
     // The singleton instance of the EventMiniBus. This is used to access the event bus from anywhere in the code.
